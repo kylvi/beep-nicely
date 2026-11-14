@@ -1,0 +1,123 @@
+/* Beep Nicely v2: the hamster's poses and idle movement (from the design canvas, 14 Nov 2026).
+
+   The hamster is ONE drawing. Its markup is in reference/hamster-rig.html and gets pasted
+   into index.html. CSS moves the drawing between poses. JavaScript only switches class names
+   on an element that wraps it (for example the screen container):
+
+     s-home                       Home: the whole hamster, standing and breathing
+     s-run    + is-close          Timer running: close-up, his tummy fills the screen
+     s-paused + is-close          Paused: the same close-up, standing still
+     p-work | p-rest | p-ready    The phase: sets the tummy colour and his eyes
+     sheet-open  (with s-home)    Settings is open: he moves up and holds the broccoli
+     is-done     (with s-home)    Finished: a small wiggle
+
+   All numbers are in the 390 x 844 design frame, which is also the drawing's coordinate system.
+   Try every pose in reference/hamster-poses.html. */
+
+.rig {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 390px;
+  height: 844px;
+  overflow: visible;        /* the fur and tummy colours may run past the frame */
+  pointer-events: none;     /* taps go through him to the buttons */
+}
+
+/* ---- The camera: whole hamster <-> close-up ----
+   He is drawn at close-up size. On Home the drawing is shrunk to 28.6% around the middle
+   of his tummy (195, 469), so zooming in is just "scale back to 1". */
+.rig .cam {
+  transform-origin: 195px 469px;
+  transform: scale(0.286);
+  transition: transform 0.7s cubic-bezier(0.3, 1.25, 0.5, 1);
+}
+.is-close .rig .cam { transform: scale(1); }
+.sheet-open.s-home .rig .cam { transform: translateY(-209px) scale(0.286); }
+
+/* His outline, arms, feet and ground shadow fade out in the close-up. */
+.rig .ink { opacity: 1; transition: opacity 0.22s ease; }
+.is-close .rig .ink { opacity: 0; transition: opacity 0.2s ease; }
+.sheet-open.s-home .rig .shadow { opacity: 0; }
+
+/* In the close-up, a copy of his fur shape grows to fill everything above the fur line. */
+.rig .flood {
+  transform-origin: 195px 100px;
+  transform: scale(1);
+  opacity: 0;
+  transition: opacity 0.22s ease, transform 0s linear 0.24s;
+}
+.is-close .rig .flood {
+  transform: scale(12);
+  opacity: 1;
+  transition: transform 0.5s ease, opacity 0.1s ease;
+}
+
+/* The tummy: warm for work, cool for rest and get ready. */
+.rig .tummy { fill: var(--work-tummy, #FDF3E9); transition: fill 0.5s ease; }
+.is-close.p-rest .rig .tummy,
+.is-close.p-ready .rig .tummy { fill: var(--rest-tummy, #E4EEEA); }
+
+/* Where each part turns or squashes from. */
+.rig .bob { transform-origin: 195px 563px; }   /* the ground under him */
+.rig .foot,
+.rig .arm,
+.rig .eye,
+.rig .shadow,
+.rig .puff { transform-box: fill-box; transform-origin: center; }
+.rig .puff { opacity: 0; }                     /* dust for the start transition: hidden for now */
+
+/* Cheeks and mouth sit a little differently on the small hamster than on the big face. */
+.rig .cheek,
+.rig .mouth { transition: transform 0.5s ease; }
+.rig .cheek-l { transform: translate(-29px, -7.3px); }
+.rig .cheek-r { transform: translate(29px, -7.3px); }
+.rig .mouth { transform: translate(0px, -6.4px); }
+.is-close .rig .cheek-l,
+.is-close .rig .cheek-r,
+.is-close .rig .mouth { transform: translate(0px, 0px); }
+
+/* Eyes: open normally, closed while he rests. */
+.rig .eyes,
+.rig .eyes-shut { transition: opacity 0.25s ease; }
+.rig .eyes-shut { opacity: 0; }
+.is-close.p-rest .rig .eyes { opacity: 0; }
+.is-close.p-rest .rig .eyes-shut { opacity: 1; }
+
+/* ---- Settings: he holds the broccoli ---- */
+.rig .broc {
+  opacity: 0;
+  transform: scale(0.5);
+  transform-origin: 195px 410px;
+  transition: opacity 0.15s ease, transform 0.2s ease;
+}
+.sheet-open.s-home .rig .broc {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.18s ease 0.25s, transform 0.4s cubic-bezier(0.3, 1.6, 0.5, 1) 0.25s;
+}
+.rig .arm { transition: transform 0.3s ease; }
+.sheet-open.s-home .rig .arm-l { transform: translate(24px, 58px); }
+.sheet-open.s-home .rig .arm-r { transform: translate(-24px, 58px); }
+
+/* ---- Idle life ---- */
+@keyframes breathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.012, 0.986); } }
+@keyframes blink { 0%, 91%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.08); } }
+@keyframes jog { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+@keyframes rest { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.008, 1.016); } }
+@keyframes wiggle { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
+
+.s-home .rig .bob { animation: breathe 3.2s ease-in-out infinite; }
+.s-home .rig .eye,
+.s-paused .rig .eye,
+.s-run.p-work .rig .eye,
+.s-run.p-ready .rig .eye { animation: blink 4.6s infinite; }
+.s-run.p-work .rig .bob { animation: jog 0.42s ease-in-out infinite; }
+.s-run.p-rest .rig .bob,
+.s-run.p-ready .rig .bob { animation: rest 3.4s ease-in-out infinite; }
+.s-home.is-done .rig .bob { animation: wiggle 0.5s ease-in-out 0.45s 3; }
+
+/* People who ask their device for less motion get the poses without the movement. */
+@media (prefers-reduced-motion: reduce) {
+  .rig * { animation: none !important; transition-duration: 0.01s !important; transition-delay: 0s !important; }
+}

@@ -1,0 +1,59 @@
+/* Beep Nicely v2: design tokens, taken from the design canvas (14 Nov 2026).
+   Change a value here and it changes everywhere that uses it. */
+:root {
+  /* hamster */
+  --fur: #ECBF9D;
+  --cream: #FDF3E9;        /* Home background and the warm tummy. Your Figma frame reads #FBF3E9: pick one. */
+  --ink: #482B15;          /* outline, eyes, main text */
+  --cheek: #FEC3B2;
+  --foot: #FED5C3;
+  --ear-pink: #FEAC9C;
+  --ear-inner: #E4B391;
+  --ground-shadow: #ECDBC9;
+  --broccoli: #A3CF8E;
+  --broccoli-spot: #89BC76;
+  --broccoli-stalk: #D9E9B9;
+
+  /* interface */
+  --text: #482B15;
+  --text-muted: #76553F;
+  --primary: #A9DBE5;      /* Start / Pause / Done */
+  --primary-pressed: #93CDD9;
+  --selected: #E3F2F5;     /* selected chip and the wheel band */
+  --selected-line: #7DC2D0;
+  --surface: #FFFFFF;
+  --sheet: #FFFBF5;
+  --line: #EFE0CF;
+  --line-strong: #E6D3BF;
+
+  /* work = warm, rest = cool */
+  --work-tummy: var(--cream);   /* keep equal to the Home background, or the zoom shows a seam */
+  --work-label: #7D4A0E;
+  --work-time: #482B15;
+  --work-dot: #E0973C;
+  --work-dot-off: #EBD4AC;
+  --rest-tummy: #E4EEEA;
+  --rest-label: #3B5448;
+  --rest-time: #2F3B35;
+  --rest-dot: #8CB7A0;
+  --rest-dot-off: #C7DCD3;
+
+  /* type */
+  --font: Fredoka, "Arial Rounded MT Bold", ui-rounded, "Hiragino Maru Gothic ProN", system-ui, sans-serif;
+  --size-time: 84px;       /* weight 700 */
+  --size-greeting: 30px;   /* weight 600 */
+  --size-mode: 24px;       /* weight 600 */
+  --size-button: 24px;     /* weight 600 */
+  --size-value: 20px;      /* weight 600 */
+  --size-body: 17px;       /* weight 500 */
+  --size-label: 15px;      /* weight 600, letter-spacing 0.3em for WORK / REST */
+  --size-small: 14px;      /* weight 500 */
+
+  /* shape and space (design frame: 390 x 844) */
+  --margin: 24px;
+  --radius-pill: 36px;
+  --radius-card: 18px;
+  --radius-sheet: 28px;
+  --touch-min: 44px;
+  --wheel-row: 40px;
+}
